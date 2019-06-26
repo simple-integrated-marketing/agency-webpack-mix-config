@@ -8,6 +8,7 @@
  * Contents
  *
  * ⚙️ Settings
+ * 🍃 Twig
  * 🎨 Styles
  * 🎨 Styles: CriticalCSS
  * 🎨 Styles: PurgeCSS
@@ -25,7 +26,6 @@
  * 🎁 Lint scripts
  * 🎁 Lint styles
  * 🎁 Webpack-dev-server
- * 🎭 File hashing
  */
 
 /**
@@ -35,7 +35,7 @@ const config = {
     devProxyDomain: "http://mix.test",
     publicFolder: "web",
     publicBuildFolder: "dist",
-    publicCleanBefore: ["dist/**/*", "mix-manifest.json"],
+    publicCleanBefore: ["dist/**/*", "*.html", "mix-manifest.json"],
 }
 
 // Imports
@@ -54,6 +54,7 @@ const source = {
     scripts: path.resolve("src/scripts"),
     styles: path.resolve("src/styles"),
     static: path.resolve("src/static"),
+    templates: path.resolve("src/templates"),
 }
 
 // ⚙️ Base public path
@@ -65,6 +66,37 @@ mix.sourceMaps()
 // ⚙️ Notifications
 // https://laravel-mix.com/docs/4.0/os-notifications
 mix.disableNotifications()
+
+/**
+ * 🍃 Twig
+ * Converts twig to html
+ * https://github.com/jantimon/html-webpack-plugin
+ */
+const HtmlWebpackPlugin = require("html-webpack-plugin")
+const twigFiles = getFilesIn(path.resolve(__dirname, source.templates), ["twig"])
+const twigHtmlPlugins = twigFiles.map(twigFile => (
+    new HtmlWebpackPlugin({
+        template: twigFile,
+        filename: `${path.basename(twigFile, path.extname(twigFile))}.html`,
+        hash: mix.inProduction(),
+    })
+))
+mix.webpackConfig({
+    module: {
+        rules: [{
+            test: /\.twig$/,
+            use: ['raw-loader',
+            {
+                loader: 'twig-html-loader',
+                options: {
+                    autoescape: true
+                },
+            }]
+        }]
+    },
+    output: { publicPath: '' }, // Fix path issues
+    plugins: twigHtmlPlugins
+})
 
 /**
  * 🎨 Styles: Main
@@ -124,7 +156,7 @@ require("laravel-mix-purgecss")
 mix.purgeCss({
     enabled: mix.inProduction(),
     globs: [path.join(__dirname, config.publicFolder, "*.html")],
-    folders: ["src", "templates"], // Folders scanned for selectors
+    folders: ["src"], // Folders scanned for selectors
     extensions: ["php", "twig", "html", "js", "mjs", "vue"],
 })
 
@@ -297,7 +329,7 @@ if (!mix.inProduction()) {
             https: config.devProxyDomain.includes("https://"),
             hot: true,
             overlay: true,
-            contentBase: path.resolve(__dirname, "templates"),
+            contentBase: source.templates,
             watchContentBase: true,
             watchOptions: {
                 aggregateTimeout: 200,
@@ -314,61 +346,5 @@ if (!mix.inProduction()) {
                 secure: false,
             },
         },
-    })
-}
-
-/**
- * 🎭 File hashing
- * Mix has querystring hashing by default, eg: main.css?id=abcd1234
- * This script converts it to filename hashing, eg: main.abcd1234.css
- * https://github.com/JeffreyWay/laravel-mix/issues/1022#issuecomment-379168021
- */
-if (mix.inProduction()) {
-    // Allow versioning in production
-    mix.version()
-    // Imports
-    const _ = require("lodash")
-    const del = require("del")
-    const jsonFile = require("jsonfile")
-    const manifestPath = path.join(config.publicFolder, "mix-manifest.json")
-    // Run after mix finishes
-    mix.then(() => {
-        // Parse the mix-manifest file
-        jsonFile.readFile(manifestPath, (err, obj) => {
-            const newJson = {}
-            const oldFiles = []
-            _.forIn(obj, (value, key) => {
-                // Get the hash from the ?id= query string parameter and
-                // move it into the file name e.g. 'app.abcd1234.css'
-                const newFilename = value.replace(
-                    /([^.]+)\.([^?]+)\?id=(.+)$/g,
-                    "$1.$3.$2"
-                )
-                // Create a glob pattern of all files with the new file naming style e.g. 'app.*.css'
-                const oldAsGlob = value.replace(
-                    /([^.]+)\.([^?]+)\?id=(.+)$/g,
-                    "$1.*.$2"
-                )
-                // Delete old versioned file(s) that match the glob pattern
-                del.sync([`${config.publicFolder}${oldAsGlob}`])
-                // Copy as new versioned file name
-                fs.copyFile(
-                    `${config.publicFolder}${key}`,
-                    `${config.publicFolder}${newFilename}`,
-                    err => {
-                        err && console.error(err)
-                    }
-                )
-                newJson[key] = newFilename
-                oldFiles.push(key)
-            })
-            _.forEach(oldFiles, key => {
-                del.sync([`${config.publicFolder}${key}`])
-            })
-            // Write the new contents of the mix manifest file
-            jsonFile.writeFile(manifestPath, newJson, { spaces: 4 }, err => {
-                if (err) console.error(err)
-            })
-        })
     })
 }

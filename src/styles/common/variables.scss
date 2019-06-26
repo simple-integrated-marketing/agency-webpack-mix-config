@@ -1,0 +1,61 @@
+// =============================================================================
+// Harmony Variables
+// =============================================================================
+
+// Breakpoints
+$min: 320px;
+$xs: 360px;
+$sm: 600px;
+$md: 768px;
+$lg: 1024px;
+$xl: 1300px;
+$xxl: 1600px;
+$xxxl: 1900px;
+$max: 2561px;
+
+$breakpoints: (
+    min: $min,
+    xs: $xs,
+    sm: $sm,
+    md: $md,
+    lg: $lg,
+    xl: $xl,
+    xxl: $xxl,
+    xxxl: $xxxl,
+    max: $max
+);
+
+// Typography
+$font-sizes: (
+    min: 8px,
+    max: 16px
+);
+
+$cap-heights: (
+    Arial: 0.715
+);
+
+// Grid
+$default-container-padding-left: (
+    sm: 16px,
+    xxl: 280px,
+    max: 600px
+);
+
+$default-container-padding-right: $default-container-padding-left;
+
+$default-horizontal-gutters: (
+    min: 10px,
+    xl: 20px
+);
+
+$default-vertical-gutters: $default-horizontal-gutters;
+
+$overlay-columns: 24;
+
+$default-container-padding-top: 0;
+$default-container-padding-bottom: 0;
+$default-container-margin-top: 0;
+$default-container-margin-bottom: 0;
+
+$default-column-margin-top: 0;
