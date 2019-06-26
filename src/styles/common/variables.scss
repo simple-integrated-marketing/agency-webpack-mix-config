@@ -44,12 +44,9 @@ $default-container-padding-left: (
 
 $default-container-padding-right: $default-container-padding-left;
 
-$default-horizontal-gutters: (
-    min: 10px,
-    xl: 20px
-);
+$default-horizontal-base-unit: (min: 10px, xl: 20px);
 
-$default-vertical-gutters: $default-horizontal-gutters;
+$default-vertical-base-unit: $default-horizontal-base-unit;
 
 $overlay-columns: 24;
 
