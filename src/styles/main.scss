@@ -18,6 +18,7 @@ body {
     fill: none;
     stroke: currentColor;
     vertical-align: middle;
+
     svg {
         width: 1em;
         height: 1em;
@@ -28,8 +29,14 @@ body {
 .icon {
     animation: breathe 1s infinite alternate ease-in-out;
 }
+
 @keyframes breathe {
     to {
         transform: scale(1.25);
     }
 }
+
+// Harmony example code
+// .four-col {
+//  @include grid-column($width: (min: 1, sm:1/2, md: 1/4));
+// }

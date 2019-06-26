@@ -1,4 +1,4 @@
-# Agency Webpack-Mix Config
+# Agency Webpack-Mix Config - Featuring Twig to HTML and Harmony
 
 <p><img width="100%" style="max-width:650px;" src="https://i.imgur.com/r5iZONo.png" alt="Icon"></p>
 
@@ -93,10 +93,8 @@ Additional folders with no transform requirements are copied to your build folde
 ### 1. Copy this repo into a new project folder:
 
 ```bash
-npx degit ben-rogerson/agency-webpack-mix-config
+npx degit ben-rogerson/agency-webpack-mix-config#flat-white-harmony
 ```
-
-&hellip;or use Github's new tool to [create a new repository](https://github.com/ben-rogerson/agency-webpack-mix-config/generate).
 
 ### 2. Install the dependencies:
 
@@ -106,6 +104,7 @@ npm install
 
 ### 3. Add your project files
 
+Start adding your project files to the `src` directory.
 
 ## Tasks
 
